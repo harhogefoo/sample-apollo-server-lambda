@@ -17,7 +17,7 @@ const createProduct = ({ product }) => {
   return Promise.resolve(newProduct)
 }
 
-module.exports = {
+export default {
   Query: {
     products: async () => getProducts(),
     product: async (_, {id }) => getProductById({ productId: id })

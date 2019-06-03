@@ -1,7 +1,6 @@
-const { gql } = require("apollo-server-lambda")
+import { gql } from 'apollo-server-lambda'
 
-
-const typeDefs = gql`
+export default gql`
   type Query {
     products: [Product]
     product(id: Int!): Product
@@ -22,5 +21,3 @@ const typeDefs = gql`
     createProduct(product: ProductInput): Product
   }
 `
-
-module.exports = typeDefs;

@@ -1,12 +1,13 @@
 service: apollo-server
 
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
 provider:
   name: aws
   runtime: nodejs10.x
   region: ap-northeast-1
-
-plugins:
-  - serverless-offline
 
 functions:
   graphql:
@@ -16,3 +17,10 @@ functions:
           path: graphql
           method: post
           cors: true
+
+# serverless-webpack configuration
+# Enable auto-packing of external modules
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true

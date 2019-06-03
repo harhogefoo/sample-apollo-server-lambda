@@ -1,12 +1,12 @@
-const { ApolloServer } = require('apollo-server-lambda')
+import { ApolloServer } from 'apollo-server-lambda'
 
-const typeDefs = require("./schema")
+import typeDefs from "./schema"
 
-const resolvers = require("./resolvers")
+import resolvers from "./resolvers"
 
 const server = new ApolloServer({ typeDefs, resolvers })
 
-exports.graphqlHandler = server.createHandler({
+export const graphqlHandler = server.createHandler({
   cors: {
     origin: '*',
     credentials: true
