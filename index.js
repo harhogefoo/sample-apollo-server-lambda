@@ -1,19 +1,14 @@
 import { ApolloServer } from 'apollo-server-lambda'
 
+import { getUserId } from './utils'
 import { getDynamoClient } from './utils/db'
 import typeDefs from "./schema"
 import resolvers from "./resolvers"
 
-const getUserId = ({ headers }) => {
-  console.log(headers)
-  const userId = headers['X-User-Id']
-  return userId || ''
-}
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ event }) => ({
+  context: ({ event }) =>({
     userId: getUserId(event),
     db: getDynamoClient(event)
   })

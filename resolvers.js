@@ -40,12 +40,36 @@ const createProduct = async ({ db, userId, product }) => {
   return params.Item
 }
 
+const updateProduct = async ({ db, userId, product }) => {
+  const { id, name, description } = product
+  const params = {
+    TableName: process.env.TABLE_NAME,
+    Key: { id, userId },
+    UpdateExpression: "set #n = :n, #d = :d, #p = :p",
+    ExpressionAttributeNames: {
+      "#n": "name",
+      "#d": "description",
+      "#p": "price"
+    },
+    ExpressionAttributeValues: {
+        ":n": name,
+        ":d": description,
+        ":p": 100
+    },
+    ReturnValues: "ALL_NEW"
+  }
+
+  const { Attributes } = await db.update(params).promise()
+  return Attributes
+}
+
 export default {
   Query: {
     products: async (parent, args, { db, userId }) => getProducts({ db, userId }),
     product: async (parent, { id }, { db, userId }) => getProductById({ db, userId, productId: id })
   },
   Mutation: {
-    createProduct: async (parent, { product }, { db, userId }) => createProduct({ db, userId, product })
+    createProduct: async (parent, { product }, { db, userId }) => createProduct({ db, userId, product }),
+    updateProduct: async (parent, { product }, { db, userId }) => updateProduct({ db, userId, product })
   }
 }

@@ -14,11 +14,13 @@ export default gql`
   }
 
   input ProductInput {
+    id: String
     name: String
     description: String
   }
 
   type Mutation {
     createProduct(product: ProductInput): Product
+    updateProduct(product: ProductInput): Product
   }
 `
