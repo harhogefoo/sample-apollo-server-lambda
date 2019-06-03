@@ -1,28 +1,51 @@
-let products = []
+import uuid from 'uuid'
 
-const getProducts = () => {
-  return Promise.resolve(products)
+const getProducts = async ({ db, userId }) => {
+  const params = {
+    TableName: process.env.TABLE_NAME,
+    ExpressionAttributeNames: {'#userId': 'userId'},
+    ExpressionAttributeValues: {':userId': userId},
+    KeyConditionExpression: '#userId = :userId',
+    IndexName: 'userIdGSI',
+  }
+  const { Items } = await db.query(params).promise()
+  return Promise.resolve(Items)
 }
 
-const getProductById = ({ productId }) => {
-  return Promise.resolve(product.find(p => p.id === productId))
+const getProductById = async ({ db, userId, productId }) => {
+  const params = {
+    TableName: process.env.TABLE_NAME,
+    Key: { id: productId, userId: userId }
+  }
+  const { Item } = await db.get(params).promise()
+  return Promise.resolve(Item)
 }
 
-const createProduct = ({ product }) => {
-  console.log(product)
-  const newId = products.length === 0 ? 1 : products[products.length-1].id + 1
-  const newProduct = { ...product, id: newId }
-  products = [...products, newProduct]
-  console.log(newProduct)
-  return Promise.resolve(newProduct)
+const createProduct = async ({ db, userId, product }) => {
+  const {
+    name,
+    description
+  } = product
+  const params = {
+    TableName: process.env.TABLE_NAME,
+    Item: {
+      id: uuid.v1(),
+      name,
+      description,
+      userId,
+      createdAt: Date.now(),
+    }
+  }
+  await db.put(params).promise()
+  return params.Item
 }
 
 export default {
   Query: {
-    products: async () => getProducts(),
-    product: async (_, {id }) => getProductById({ productId: id })
+    products: async (parent, args, { db, userId }) => getProducts({ db, userId }),
+    product: async (parent, { id }, { db, userId }) => getProductById({ db, userId, productId: id })
   },
   Mutation: {
-    createProduct: async (_, { product }) => createProduct({ product })
+    createProduct: async (parent, { product }, { db, userId }) => createProduct({ db, userId, product })
   }
 }

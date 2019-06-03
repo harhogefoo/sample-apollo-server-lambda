@@ -3,13 +3,14 @@ import { gql } from 'apollo-server-lambda'
 export default gql`
   type Query {
     products: [Product]
-    product(id: Int!): Product
+    product(id: String!): Product
   }
 
   type Product {
-    id: Int
+    id: String!
     name: String
     description: String
+    userId: String!
   }
 
   input ProductInput {
